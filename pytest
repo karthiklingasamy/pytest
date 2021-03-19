@@ -1,1 +1,106 @@
+1. Any pytest file should start with test_
+2. Method name should start with test 
+3. Any code should be wrapped in method only (Each method will be treated as one test case. So write you method name carefully)
+4. Always have to give unique method name
+4. to run pytest use the below command
+   >pipenv run py.test -v -s 
+   Optional
+   -V more verbos
+   -s to print ouput in console
+   -k stands for method names execution
+   
+5. You can run specific file with py.test>filename>
+   >pytest test1.py
+   
+6. To Run selected test case from different files
+    >py.test -k CreditCard -v -s
+	-V more verbos
+    -s to print ouput in console
+    -k stands for method names execution
+	
+7. To run smoke test cases just mark the test cases with the below Decoratore 
+   @pytest.mark.smoke
+   def test_1.py():
+	pass
+   
+   >py.test -m smoke -v -s 
+   
+   you can mart(tag)test @pytest.mart.smoke and then run with -m
+   
+8. To skip test case due to environment isue
+
+   @pytest.mark.skip
+   def test_1.py():
+	pass
+	
+	 >py.test -v -s 
+	
+	
+9. Run the test case which is keepon fail but supress the status in results. Bcz the test case was executed succesfully (example JMK ok-popup issue)
+   
+   @pytest.mark.xfail
+   def test_2.py
+    pass
+   
+   >py.test -v -s 
+   
+   
+10. Fixture are used as setup and tear down methods for test cases -configtest file to generalize fixture and make it available to all test cases
+    import pytest
+
+	@pytest.fixture()
+	def setup():#You can give any name
+		#Before Start test
+		print("Hi this is setup first")
+		yield
+		# After the test
+		print('I will be executed last')
+
+
+	def test_fixturedemo_1(setup):
+		print("Test Case 1:I will execute setup in fixture demo method")
+
+	def test_fixturedemo_2(setup):
+		print("Test Case 2:I will execute setup in fixture demo method")
+		
+		
+11. Create conftest.py file and write all you fixtures. Standard Approach.
+    Note: First pytest will check the fixture is implemented in local file. If it is not available it will 
+	      go and find in conftest.py file
+		  
+	import pytest
+
+	#@pytest.fixture(scope='class')  # It will run the setp and tear  only once. Eg: To cleare the cach before start all the test
+	@pytest.fixture() # It will run the setup and tear down every time for each test case
+	def setup():#You can give any name
+		#Before Start test
+		print("Hi this is setup first")
+		yield
+		# After the test
+		print('I will be executed last')
+		
+12. Fixtures are also help you to load the test data(Parametrization). request is the object/instance of fixture. You need to use request instanly only the fixture with some values available
+    import pytest
+	
+	@pytest.fixture() 
+	def dataLoad():
+		print('user profile data is being created')
+		return ["karthik","lingasamy","lkarthik1985@gmail.com"]
+
+	@pytest.fixture(params=[("chrome","karthik"),("Firefox","lingasamy"),("IE","Rahul")])
+	def crossBrowser(request): #request is the object/instance of fixture. You need to use request instanly only the fixture with some values available
+		return request.param
+		
+	def test_crossBrowser(crossBrowser):
+    print(crossBrowser[1])
+	
+	Note: when you run th etest it will 3 iteration bcz you have three data. 
+	Also there is a better solution instead of passing the whole test data using param we can decleare seperate class for that. will see later
+	
+13. How to generate pytest HTML report
+    1. >pipenv install pytest-html
+	
+14  Generate report
+	>py.test --html=report.html
+	>pytest test_1.py -v -s --capture=tee-sys --html=report.html
 
